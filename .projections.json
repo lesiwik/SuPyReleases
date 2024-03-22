@@ -1,0 +1,17 @@
+{
+  "src/supy/*.py": {
+    "alternate": "tests/{dirname}/test_{basename}.py",
+    "type": "source"
+  },
+  "tests/**/test_*.py": {
+    "alternate": "src/supy/{}.py",
+    "type": "test"
+  },
+  "*": {
+    "path": [
+      "src/**",
+      "tests/**",
+      "scripts/**"
+    ]
+  }
+}

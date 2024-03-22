@@ -1,0 +1,159 @@
+[tool.poetry]
+name = "supy"
+version = "0.1.0"
+description = ""
+authors = [
+    "Leszek Siwik <leszek.siwik@gmail.com>",
+    "Marcin Łoś <marcin.los.91@gmail.com>",
+]
+readme = "README.md"
+homepage = "https://github.com/lesiwik/SuPy"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "^1.26.4"
+scipy = "^1.12.0"
+matplotlib = "^3.8.2"
+pandas = "^2.2.1"
+dill = "^0.3.8"
+adao = "^9.12.0.3"
+pyabc = "^0.12.13"
+pymoo = "^0.6.1.1"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.1"
+pre-commit = "^3.6.0"
+mypy = "^1.8.0"
+codespell = "^2.2.6"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.0.0"
+pytest-mock = "^3.12.0"
+pytest-watcher = "^0.4.1"
+pytest-asyncio = "^0.23.5"
+pytest-timeout = "^2.2.0"
+
+[tool.poetry.group.notebooks.dependencies]
+jupyterlab = "^4.1.0"
+jupyterlab-myst = "^2.3.1"
+jupytext = "^1.16.1"
+nbdime = "^4.0.1"
+ipywidgets = "^8.1.2"
+
+[tool.poetry.group.doc.dependencies]
+sphinx = "^7.2.6"
+pydata-sphinx-theme = "^0.15.2"
+sphinx-copybutton = "^0.5.2"
+numpydoc = "^1.6.0"
+grip = "^4.6.2"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+    "src",
+]
+addopts = """
+--ignore='src/supy/timeAwareAssimilation.py'
+--strict-markers
+--doctest-modules
+"""
+
+markers = [
+    "slow: marks tests as slow",
+    "threads: marks tests running multiple threads",
+    "processes: marks tests running multiple processes",
+]
+filterwarnings = [
+    'ignore:datetime.datetime.utcfromtimestamp\(\) is deprecated:DeprecationWarning',
+    'ignore::DeprecationWarning:pyabc.visualization.contour',
+    'ignore::PendingDeprecationWarning:numpy.matrixlib.defmatrix', # caused by ADAO
+    'ignore:`np.math`:DeprecationWarning:pymoo',
+]
+
+
+[tool.jupytext.formats]
+"notebooks/" = "ipynb"
+"scripts/" = "py:percent"
+
+
+[tool.ruff]
+target-version = "py311"
+src = [
+    "src",
+    "tests",
+    "scripts",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",     # pycodestyle
+    "F",     # Pyflakes
+    "D",     # pydoc
+    "UP",    # pyupgrade
+    "B",     # flake8-bugbear
+    "SIM",   # flake8-simplify
+    "PT",    # flake8-pytest-style
+    "I",     # isort
+]
+
+# ignore missing docstrings
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# No docstrings in tests and scripts
+"tests/**" = ["D"]
+"scripts/**" = [
+    "D",
+    # top-level await is fine in Jupyter scripts
+    "F704",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.mypy]
+ignore_missing_imports = true
+plugins = "numpy.typing.mypy_plugin"
+exclude = [
+    "docs/source/conf.py",
+    "docs/source/generated/",
+    "docs/build/",
+    "notebooks/",
+    "data/",
+]
+# ruff already warns about it, and it seems there is no way to disable
+# it for the directory that is not a package
+disable_error_code = ["top-level-await"]
+
+
+[tool.codespell]
+skip = "*.ipynb,poetry.lock,./docs/build,./docs/source/generated"
+count = true
+ignore-words = '.ignored-words'
+
+[tool.numpydoc_validation]
+checks = [
+    "all",
+    # report on all checks, except the ones below
+    "EX01",
+    "SA01",
+    "ES01",
+    # missing docstrings
+    "GL08",
+]
+
+# don't report on objects that match any of these regex
+exclude = [
+    '\._[a-zA-Z]+', # private stuff
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

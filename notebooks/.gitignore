@@ -1,0 +1,2 @@
+# We want the notebooks/ directory, but we do not keep the notebooks in git
+*.ipynb
